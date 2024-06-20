@@ -7,9 +7,12 @@ public class Podaci implements Serializable {
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private static final String DIGITS = "0123456789";
     private static final int PASSWORD_LENGTH = 12;
-    private static final int NAME_LENGTH = 6; // Duzina nasumicnog imena/prezimena
-    private static final int ACCOUNT_COUNT = 20; // Broj racuna za generirati
+    private static final int ACCOUNT_COUNT = 20; // Number of accounts to generate
     private static final String FILE_PATH = "C:\\Users\\valen\\Documents\\NetBeansProjects\\Automatization\\Podaci\\InformacijeORacunima.txt";
+
+    // Syllables for generating more realistic names
+    private static final String[] FIRST_NAME_SYLLABLES = {"An", "Be", "Cal", "Dan", "El", "Fa", "Ga", "Ha", "In", "Ja", "Ka", "La", "Ma", "Na", "O", "Pa", "Qu", "Ra", "Sa", "Ta", "Ur", "Va", "Wa", "Xa", "Ya", "Za"};
+    private static final String[] LAST_NAME_SYLLABLES = {"son", "ford", "field", "ton", "ham", "man", "well", "land", "wood", "brook", "stone", "hall", "berg", "wall", "port", "dale", "ridge", "brook", "croft", "hart"};
 
     private String firstName;
     private String lastName;
@@ -28,8 +31,8 @@ public class Podaci implements Serializable {
     public static void main(String[] args) {
         try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_PATH))) {
             for (int i = 0; i < ACCOUNT_COUNT; i++) {
-                String firstName = generateRandomName(NAME_LENGTH);
-                String lastName = generateRandomName(NAME_LENGTH);
+                String firstName = generateRandomFirstName();
+                String lastName = generateRandomLastName();
                 String email = generateEmail(firstName, lastName);
                 String password = generatePassword();
                 String birthDate = generateBirthDate();
@@ -50,19 +53,34 @@ public class Podaci implements Serializable {
         }
     }
 
-    private static String generateRandomName(int length) {
+    private static String generateRandomFirstName() {
         Random random = new Random();
-        StringBuilder name = new StringBuilder(length);
+        StringBuilder firstName = new StringBuilder();
 
-        // Prvo slovo veliko
-        name.append(CHARACTERS.charAt(random.nextInt(26)));
-
-        // Ostala slova mala
-        for (int i = 1; i < length; i++) {
-            name.append(CHARACTERS.toLowerCase().charAt(random.nextInt(26)));
+        // Combine 2-3 random syllables for the first name
+        int syllableCount = random.nextInt(2) + 2; // 2 or 3 syllables
+        for (int i = 0; i < syllableCount; i++) {
+            firstName.append(FIRST_NAME_SYLLABLES[random.nextInt(FIRST_NAME_SYLLABLES.length)]);
         }
 
-        return name.toString();
+        // Capitalize the first letter
+        firstName.setCharAt(0, Character.toUpperCase(firstName.charAt(0)));
+        return firstName.toString();
+    }
+
+    private static String generateRandomLastName() {
+        Random random = new Random();
+        StringBuilder lastName = new StringBuilder();
+
+        // Combine 1-2 random syllables for the last name
+        int syllableCount = random.nextInt(2) + 1; // 1 or 2 syllables
+        for (int i = 0; i < syllableCount; i++) {
+            lastName.append(LAST_NAME_SYLLABLES[random.nextInt(LAST_NAME_SYLLABLES.length)]);
+        }
+
+        // Capitalize the first letter
+        lastName.setCharAt(0, Character.toUpperCase(lastName.charAt(0)));
+        return lastName.toString();
     }
 
     private static String generateEmail(String firstName, String lastName) {
